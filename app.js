@@ -50,59 +50,6 @@ app.get('/login', (req, res)=>{
     res.render('login');
 })
 
-app.post('/login', (req, res) => {
-    const user = new User({
-        username: req.body.username,
-        password: req.body.passport
-    });
-
-    req.login(user, (err) => {
-        if (err) {
-            console.log(err);
-        } else {
-            passport.authenticate('local')(req, res, ()=>{
-                res.redirect('/secrets');
-            })
-        }
-    })
-});
-
-app.get('/register', (req, res)=>{
-    res.render('register');
-});
-
-app.get("/secrets", (req, res) => {
-    if (req.isAuthenticated()) {
-        res.render("secrets");
-    } else {
-        res.redirect('/login');
-    }
-})
-
-app.get('/logout', (req, res) => {
-    req.logout((err) => {
-        if (err) {
-            console.log(err);
-        }
-    });
-    res.redirect('/');
-})
-
-app.post('/register', (req, res) => {
-
-    User.register({username: req.body.username}, req.body.password, (err, user) => {
-        if (err) {
-            console.log(err);
-            res.redirect("/register");
-        } else {
-            //the callback function only run if authentication is successful
-            passport.authenticate('local')(req, res, function(){
-                res.redirect("/secrets");
-            })
-        }
-    })
-
-})
 
 app.listen(3000, () => {
     console.log("Successfully launched on port 3000");
