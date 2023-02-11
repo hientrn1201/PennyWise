@@ -14,7 +14,7 @@ const { Decimal128 } = require('bson');
 const app = express();
 
 app.use(express.static('public'));
-app.set('view engine', 'ejs');
+//app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -87,7 +87,7 @@ app.get('/register', (req, res)=>{
 
 app.get("/dashboard", (req, res) => {
   if (req.isAuthenticated()) {
-    res.sendFile(path.join(__dirname, "dashboard.html"));
+    res.render('dashboard');
   } else {
     res.redirect('/login');
   }
