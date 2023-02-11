@@ -8,7 +8,7 @@ const session = require("express-session");
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 const plaid = require('plaid');
-const { float } = require('webidl-conversions');
+const path = require('path');
 const { Decimal128 } = require('bson');
 
 const app = express();
@@ -56,33 +56,12 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-
-// app.post('/get_access_token', (request, response) => {
-//   const publicToken = request.body.public_token;
-//   client.exchangePublicToken(publicToken, (error, tokenResponse) => {
-//     if (error != null) {
-//       console.log('Could not exchange public_token!' + '\n' + error);
-//       return response.json({
-//         error: error,
-//       });
-//     }
-//     const accessToken = tokenResponse.access_token;
-//     const itemID = tokenResponse.item_id;
-//     console.log('Access Token: ' + accessToken);
-//     console.log('Item ID: ' + itemID);
-//     response.json({
-//       access_token: accessToken,
-//       item_id: itemID,
-//     });
-//   });
-// });
-
 app.get('/', (req, res)=>{
-  res.render('home');
+  res.sendFile(path.join(__dirname, "home.html"));
 })
 
 app.get('/login', (req, res)=>{
-  res.render('login');
+  res.sendFile(path.join(__dirname, "login.html"));
 })
 
 app.post('/login', (req, res) => {
@@ -96,22 +75,30 @@ app.post('/login', (req, res) => {
           console.log(err);
       } else {
           passport.authenticate('local')(req, res, ()=>{
-              res.redirect('/dashboard');
+            res.redirect('/dashboard');
           })
       }
   })
 });
 
 app.get('/register', (req, res)=>{
-  res.render('register');
+  res.sendFile(path.join(__dirname, "register.html"));
 });
 
 app.get("/dashboard", (req, res) => {
   if (req.isAuthenticated()) {
-      console.log(req.user.username);
-      res.render("dashboard");
+    res.sendFile(path.join(__dirname, "dashboard.html"));
   } else {
-      res.redirect('/login');
+    res.redirect('/login');
+  }
+})
+
+app.get("/api/userData", async (req, res) => {
+  if (req.isAuthenticated()) {
+    console.log(req.user.username);
+    res.json({username: req.user.username});
+  } else {
+    res.redirect('login');
   }
 })
 
@@ -129,11 +116,11 @@ app.post('/register', (req, res) => {
   User.register({username: req.body.username}, req.body.password, (err, user) => {
       if (err) {
           console.log(err);
-          res.redirect("/register");
+          res.redirect('/register');
       } else {
           //the callback function only run if authentication is successful
           passport.authenticate('local')(req, res, function(){
-              res.redirect("/dashboard");
+            res.redirect('/dashboard');
           })
       }
   })
