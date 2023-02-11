@@ -1,12 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+  <style>
+    #link-button {
+      font-size: 1em;
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+  <title>Plaid</title>
 </head>
 <body>
-  <h1>Hello world</h1>
+  <h1>Plaid Link Example</h1>
+  <p>Click the button below to log in with your bank account:</p>
+  <button id="login-button" >Log in</button>
+
+  <script type="text/javascript">
+    document.getElementById("login-button").onclick = function () {
+        location.href = "/login";
+    };
+  </script>
 </body>
 </html>
