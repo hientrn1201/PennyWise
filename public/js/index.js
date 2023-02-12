@@ -1,18 +1,7 @@
-
+//import covert JSON to graph-able data
+//import getGraphData from "js/trend.js";
 // Load the Visualization API and the piechart package.
-google.charts.load('current', {'packages':['corechart']});
-
-// const getBtn = document.getElementById('get-button');
-// const input = document.getElementById('get-input');
-// const baseUrl = "http://localhost:3000/api/userData";
-// async function getInfo(e) {  
-//   e.preventDefault();
-//   const res = await fetch(baseUrl,{
-//     method: "GET",
-//   })
-//   const data = await res.json();
-//   input.value = data.username;
-// }
+//google.charts.load('current', {'packages':['line', 'corechart']});
 
 
 //PLAID API
@@ -37,6 +26,7 @@ google.charts.load('current', {'packages':['corechart']});
           "Content-Type": "application/json",
         },
       });
+      window.location = '/final';
     },
     onEvent: (eventName, metadata) => {
       console.log("Event:", eventName);
@@ -56,24 +46,21 @@ google.charts.load('current', {'packages':['corechart']});
 
 // Retrieves balance information
 const getBalance = async function () {
-  const response = await fetch("/api/data", {
+  const response = await fetch("/api/balance", {
     method: "GET",
   });
   const data = await response.json();
-  const accountBalence = data.Balance.accounts.balances.current;
-
-  //Render response data
-  const pre = document.getElementById("response");
-  pre.textContent = JSON.stringify(accountBalence, null, 2);
-  pre.style.background = "#F6F6F6";
+  console.log(data);
 };
+
 
 // Check whether account is connected
 const getStatus = async function () {
   const account = await fetch("/api/is_account_connected");
   const connected = await account.json();
   if (connected.status == true) {
-    getBalance();
+    //getBalance();
+    window.location = '/final';
   }
 };
 
