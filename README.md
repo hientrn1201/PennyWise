@@ -9,5 +9,7 @@ To ensure the most accurate and up-to-date financial information, PennyWise inte
 
 # How to init the app
 You need to install npm for nodeJS
+
 and set up MongoDB 
+
 then go to terminal and run "node app.js"
