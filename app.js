@@ -7,13 +7,14 @@ const mongoose = require('mongoose');
 const session = require("express-session");
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
-const plaid = require('plaid');
 const path = require('path');
-const { Decimal128 } = require('bson');
+const { Configuration, PlaidApi, PlaidEnvironments } = require("plaid");
+const e = require('express');
 
 const app = express();
 
 app.use(express.static('public'));
+app.use(bodyParser.json());
 //app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
     extended: true
@@ -28,11 +29,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// const client = new plaid.Client({
-//   clientID: '63e71b0bf971480013f634f0',
-//   secret: '8b8b3084cfd6c5018ecd48f84ad841',
-//   env: 'sandbox', // Replace with 'production' when you're ready to go live
-// });
 
 mongoose.set('strictQuery', false);
 //mongoose.set('useCreateIndex', true);
@@ -42,9 +38,11 @@ const userSchema = new mongoose.Schema({
     email: String,
     password: String,
     accessToken: String,
-    monthlyBudget: Decimal128,
-    monthlySpent: Decimal128,
-    goal: Decimal128,
+    accountId: String,
+    balance: Number,
+    monthlySpent: Number,
+    monthlyBudget: Number,
+    goal: Number
 });
 
 
@@ -87,7 +85,7 @@ app.get('/register', (req, res)=>{
 
 app.get("/dashboard", (req, res) => {
   if (req.isAuthenticated()) {
-    res.render('dashboard');
+    res.sendFile(path.join(__dirname, "dashboard.html"));
   } else {
     res.redirect('/login');
   }
@@ -95,7 +93,6 @@ app.get("/dashboard", (req, res) => {
 
 app.get("/api/userData", async (req, res) => {
   if (req.isAuthenticated()) {
-    console.log(req.user.username);
     res.json({username: req.user.username});
   } else {
     res.redirect('login');
@@ -126,6 +123,76 @@ app.post('/register', (req, res) => {
   })
 
 })
+
+// Configuration for the Plaid client
+const config = new Configuration({
+  basePath: PlaidEnvironments.sandbox,
+  baseOptions: {
+    headers: {
+      "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
+      "PLAID-SECRET": process.env.PLAID_SECRET,
+      "Plaid-Version": "2020-09-14",
+    },
+  },
+});
+
+const client = new PlaidApi(config);
+
+//Creates a Link token and return it
+app.get("/api/create_link_token", async (req, res, next) => {
+  const tokenResponse = await client.linkTokenCreate({
+    user: { client_user_id: req.sessionID },
+    client_name: "PennyWise",
+    language: "en",
+    products: ["auth"],
+    country_codes: ["US"],
+    redirect_uri: process.env.PLAID_SANDBOX_REDIRECT_URI,
+  });
+  res.json(tokenResponse.data);
+});
+
+// Exchanges the public token from Plaid Link for an access token
+app.post("/api/exchange_public_token", async (req, res, next) => {
+  const exchangeResponse = await client.itemPublicTokenExchange({
+    public_token: req.body.public_token,
+  });
+
+  //update access_token to the user
+  User.updateOne({_id: req.user._id}, {accessToken: exchangeResponse.data.access_token}, (e) => {
+    if (e) {
+      console.log(e);
+    }
+  });
+
+  res.json(true);
+});
+
+// Fetches balance data using the Node client library for Plaid
+app.get("/api/data", async (req, res, next) => {
+  const access_token = req.user.access_token;
+  const balanceResponse = await client.accountsBalanceGet({ access_token });
+  const balance = balanceResponse.data.accounts[0].balances.current;
+  const accountId = balanceResponse.data.accounts[0].account_id;
+  User.updateOne({_id: req.user._id}, {balance: balance, accountId: accountId}, (e) => {
+    if (e) {
+      console.log(e);
+    }
+  });
+
+  res.json({
+    userData: req.user,
+  });
+});
+
+app.get("/success", async (req, res) =>{
+  res.sendFile(path.join(__dirname, "success.html"));
+});
+
+// Checks whether the user's account is connected, called
+// in index.html when redirected from oauth.html
+app.get("/api/is_account_connected", async (req, res, next) => {
+  return (req.user.access_token ? res.json({ status: true }) : res.json({ status: false}));
+});
 
 
 app.listen(3000, () => {

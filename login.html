@@ -10,30 +10,6 @@
       - custom css link
     -->
 
-    <style>
-        .container {
-          display: flex;
-        }
-    
-        .left-section {
-          width: 20%;
-          background-image: url(HD-wallpaper-redxblue-abstract-blue-colors-gradient-kor4-rts-line-liquid-red-soft.jpg);
-          background-repeat: no-repeat;
-          background-size: cover;
-          height: 100vh;
-        }
-    
-        .right-section {
-          width: 80%;
-          padding: 20px;
-        }
-      </style>
-
-    <!--
-      - custom css link
-    -->
-
-
     <link rel="stylesheet" href="css/styles.css">
   
     <!--
@@ -48,9 +24,9 @@
     <div class="d-flex justify-content-center" style="padding-top: 15rem;">
         <div class="wrapper" style="width: 25%;" >
             <h2 class="section-title">Log In</h2>
-            <form action="">
+            <form action="/login" method="Post">
               <label for="email">Email</label>
-              <input type="email" name="email">
+              <input type="email" name="username">
               <br>
               <label for="password">Password</label>
               <input type="password" name="password">
@@ -61,14 +37,6 @@
             </form>
           </div>
     </div>
-
-
-    <div class="container">
-        <div class="left-section"></div>
-        <div class="right-section">
-          <p>This is the right section of the page.</p>
-        </div>
-      </div>
 
 </body>
 </html>

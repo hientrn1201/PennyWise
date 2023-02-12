@@ -1,16 +1,4 @@
-/*-----------------------------------*\ 
-  #style.css
-\*-----------------------------------*/
-
-/*-----------------------------------*\ 
-  #VARIABLE
-\*-----------------------------------*/
-
 :root {
-
-    /**
-     * colors 
-     */
   
     --light-grayish-blue: hsl(0, 0%, 100%);
     --very-light-gray:    hsl(0, 0%, 96%);
@@ -19,23 +7,10 @@
     --lime-green:         hsl(244, 72%, 48%);
     --dark-blue:          hsl(0, 0%, 0%);
     --white:              hsl(0, 0%, 100%);
-  
-    /**
-     * spacing 
-     */
-  
+
     --px: 20px;
   
   }
-  
-  
-  
-  
-  
-  /*-----------------------------------*\ 
-    #RESET
-  \*-----------------------------------*/
-  
   *, *::before, *::after {
     margin:  0;
     padding: 0;
@@ -62,28 +37,11 @@
   }
   
   img, span, svg { display: block; }
-  
-  
-  
-  
-  
-  /*-----------------------------------*\ 
-    #MAIN
-  \*-----------------------------------*/
-  
+
   .container {
     max-width: 1440px;
     margin: auto;
   }
-  
-  
-  
-  
-  
-  /*-----------------------------------*\ 
-    #HEADER
-  \*-----------------------------------*/
-  
   header {
     position: fixed;
     top:  0;
@@ -114,11 +72,6 @@
     height: 1px;
     transition: 0.25s ease;
   }
-  
-  .navbar-toggle-btn.active .one { transform: rotate(45deg) translateY(3px); }
-  .navbar-toggle-btn.active .two { display: none; }
-  .navbar-toggle-btn.active .three { transform: rotate(-45deg) translateY(-3px); }
-  
   .navbar-nav {
     position: fixed;
     background: var(--white);
@@ -159,37 +112,19 @@
     display: block;
     transition: 0.25s ease;
   }
-  
   .btn-primary:hover { opacity: 0.7; }
-  
   .navbar .btn-primary { display: none; }
-  
-  
-  
-  
-  
-  /*-----------------------------------*\ 
-    #HOME
-  \*-----------------------------------*/
-  
   main { overflow: hidden; }
-  
   .home {
     background: var(--very-light-gray);
     padding-bottom: 60px;
   }
-  
   .home-img-box {
     background: url(./images/bg-intro-mobile.svg) no-repeat top;
     background-size: cover;
     padding: 0 25px;
     margin-bottom: 80px;
   }
-  
-  .home-img-box .home-img {
-    
-  }
-  
   .home-title {
     font-size: 38px;
     font-weight: 400;
@@ -256,14 +191,6 @@
     text-align: center;
   }
   
-  
-  
-  
-  
-  /*-----------------------------------*\ 
-    #SERVICE
-  \*-----------------------------------*/
-  
   .service {
     padding: 100px var(--px);
     background: var(--light-grayish-blue);
@@ -304,80 +231,11 @@
     font-weight: 400;
     margin-bottom: 20px;
   }
-  
   .service-card .card-text {
     font-size: 15px;
     color: var(--grayish-blue);
     line-height: 1.7;
   }
-  
-  
-  
-  
-  
-  /*-----------------------------------*\ 
-    #BLOG
-  \*-----------------------------------*/
-  
-  .blog {
-    padding: 60px var(--px);
-    background: var(--very-light-gray);
-  }
-  
-  .blog .section-title { margin-bottom: 30px; }
-  
-  .article-card-group {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
-  
-  .article-card {
-    border-radius: 5px;
-    background: var(--white);
-    overflow: hidden;
-  }
-  
-  .article-card .card-head { height: 200px; }
-  
-  .article-card .card-img {
-    width:  100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .article-card .card-body { padding: 20px; }
-  
-  .article-card .article-author {
-    font-size: 10px;
-    color: var(--grayish-blue);
-    margin-bottom: 10px;
-  }
-  
-  .article-card .card-title {
-    font-size: 16px;
-    font-weight: 400;
-    color: var(--dark-blue);
-    margin-bottom: 10px;
-    transition: 0.25s ease;
-  }
-  
-  .article-card .card-title:hover { color: var(--lime-green); }
-  
-  .article-card .card-text {
-    font-size: 13px;
-    color: var(--grayish-blue);
-    line-height: 1.5;
-  }
-  
-  
-  
-  
-  
-  /*-----------------------------------*\ 
-    #FOOTER
-  \*-----------------------------------*/
-  
   footer {
     background: var(--dark-blue);
     display:         flex;
@@ -427,40 +285,16 @@
     color: var(--grayish-blue);
     font-size: 14px;
   }
-  
-  
-  
-  
-  
-  /*-----------------------------------*\ 
-    #RESPONSIVE
-  \*-----------------------------------*/
-  
-  
-  /*-----------------------------------*\ 
-    #for tablet
-  \*-----------------------------------*/
-  
+
   @media (min-width: 768px) {
   
     :root { --px: 80px; }
-  
-    /**
-     * home 
-     */
-  
+
     .home-text {
       font-size: 18px;
       max-width: 600px;
     }
-    
-  
-  
-  
-    /**
-     * service 
-     */
-  
+
     .section-text {
       font-size: 18px;
       max-width: 400px;
@@ -470,33 +304,14 @@
   
     .service-card-group { grid-template-columns: repeat(2, 1fr); }
   
-  
-  
-  
-    /**
-     * blog 
-     */
-  
     .blog .section-title { margin-bottom: 50px; }
   
     .article-card-group { grid-template-columns: repeat(2, 1fr); }
   
   }
   
-  
-  
-  
-  
-  /*-----------------------------------*\ 
-    #for large tablet
-  \*-----------------------------------*/
-  
   @media (min-width: 1024px) {
-  
-    /**
-     * header 
-     */
-  
+
     header { position: static; }
   
     .navbar { padding: 0 var(--px); }
@@ -519,23 +334,15 @@
       padding: 30px 0;
       transition: 0.25s ease;
     }
-  
     .navbar-nav a:hover {
       color: var(--dark-blue);
       box-shadow: inset 0 -3px 0 var(--lime-green);
     }
-  
     .navbar .btn-primary {
       display: block;
       margin: 0;
     }
-  
-  
-  
-    /**
-     * home 
-     */
-  
+
     .home {
       display:        flex;
       flex-direction: row-reverse;
@@ -577,14 +384,7 @@
     }
   
     .btn-primary { margin: 0; }
-  
-  
-  
-  
-    /**
-     * service 
-     */
-  
+
     .service { padding: 100px var(--px); }
   
     .section-title {
@@ -615,23 +415,6 @@
   
     .service-card .card-text { font-size: 16px; }
   
-  
-  
-    /**
-     * blog 
-     */
-  
-    .blog { padding: 100px var(--px); }
-  
-    .article-card-group { grid-template-columns: repeat(4, 1fr); }
-  
-  
-  
-  
-    /**
-     * footer 
-     */
-  
     footer {
       flex-direction:  row;
       justify-content: space-between;
@@ -645,38 +428,17 @@
       width: 50%;
     }
   
-    .footer-brand {
-      margin: 0;
-      margin-bottom: 50px;
-    }
-  
-    .social-link {
-      gap: 12px;
-      margin-bottom: 0;
-    }
-  
-    .social-link ion-icon { font-size: 22px; }
-  
     .footer-nav {
       margin-bottom: 0;
       width: 50%;
       display:         flex;
       justify-content: space-between;
     }
-  
     .footer-nav ul { margin-bottom: 0; }
   
     footer .btn-primary { margin-left: auto; }
   
   }
-  
-  
-  
-  
-  
-  /*-----------------------------------*\ 
-    #for laptop
-  \*-----------------------------------*/
   
   @media (min-width: 1200px) {
   
