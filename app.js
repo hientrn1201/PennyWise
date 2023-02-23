@@ -83,7 +83,7 @@ app.post('/login', (req, res) => {
           res.redirect('/register')
       } else {
           passport.authenticate('local')(req, res, ()=>{
-            if (typeof(user.accessToken) === undefined) {
+            if (typeof(user.accessToken) == undefined) {
               res.redirect('/link');    
             } else {
               res.redirect('/dashboard');
