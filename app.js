@@ -83,7 +83,12 @@ app.post('/login', (req, res) => {
           res.redirect('/register')
       } else {
           passport.authenticate('local')(req, res, ()=>{
-            res.redirect('/dashboard');
+            if (typeof(user.accessToken) === undefined) {
+              res.redirect('/link');    
+            } else {
+              res.redirect('/dashboard');
+            }
+            
           })
       }
   })
@@ -93,7 +98,7 @@ app.get('/register', (req, res)=>{
   res.sendFile(path.join(__dirname, "register.html"));
 });
 
-app.get("/dashboard", (req, res) => {
+app.get("/link", (req, res) => {
   if (req.isAuthenticated()) {
     res.sendFile(path.join(__dirname, "link.html"));
   } else {
@@ -101,7 +106,7 @@ app.get("/dashboard", (req, res) => {
   }
 })
 
-app.get("/final", (req, res) => {
+app.get("/dashboard", (req, res) => {
   if (req.isAuthenticated()) {
     res.sendFile(path.join(__dirname, "dashboard.html"));
   } else {
@@ -189,8 +194,6 @@ app.post("/api/exchange_public_token", async (req, res, next) => {
 // Fetches balance data using the Node client library for Plaid
 app.get("/api/balance", async (req, res, next) => {
   const access_token = req.user.accessToken;
-
-
   res.json({
     Balance: balance,
   });

@@ -26,7 +26,7 @@
           "Content-Type": "application/json",
         },
       });
-      window.location = '/final';
+      window.location = '/dashboard';
     },
     onEvent: (eventName, metadata) => {
       console.log("Event:", eventName);
@@ -54,14 +54,14 @@ const getBalance = async function () {
 };
 
 
-// Check whether account is connected
-const getStatus = async function () {
-  const account = await fetch("/api/is_account_connected");
-  const connected = await account.json();
-  if (connected.status == true) {
-    //getBalance();
-    window.location = '/final';
-  }
-};
+// // Check whether account is connected
+// const getStatus = async function () {
+//   const account = await fetch("/api/is_account_connected");
+//   const connected = await account.json();
+//   if (connected.status == true) {
+//     //getBalance();
+//     window.location = '/final';
+//   }
+// };
 
-getStatus();
+// getStatus();

@@ -1,3 +1,5 @@
+import getGraphData from "./calc";
+
 google.charts.load('current', {'packages':['line', 'corechart']});
 const getTransactions = async function () {
   const response = await fetch("/api/transactions", {
@@ -10,40 +12,8 @@ const getTransactions = async function () {
   document.getElementById('goal').textContent = "$"+goal + '';
   document.getElementById('progress').textContent = "$"+progress + '';
   document.getElementById('percentage').textContent = Math.round(100*progress/goal)+"%"
-  transactions.sort(function(item1, item2) {
-    return new Date(item1.date) - new Date(item2.date);
-  })
-  
-  let tArray = [];
-  let categoryMap = {};
-  let balance = 5000;
-  let i = 0;
-  tArray.push([i, balance]);
 
-  
-  
-  transactions.forEach((transaction) => {
-    const category = transaction.category;
-    const amount = transaction.amount;
-    i += 1;
-    balance -= amount;
-    if (!(category in categoryMap)) {
-      categoryMap[category] = parseFloat(amount);
-    } else {
-      categoryMap[category] += parseFloat(amount);
-    }
-    tArray.push([i, balance]);
-  });
-
-  let positive = [['Categories', 'Percentage']];
-  let negative = [['Categories', 'Percentage']];
-  for (let k in categoryMap) {
-    if (categoryMap[k] < 0) {
-      positive.push([k, categoryMap[k]*-1]);
-    } else {
-      negative.push([k, categoryMap[k]]);
-    }
-  }
+  const [categoryMap, tArray] = getGraphData(transactions);
     
   var data = new google.visualization.DataTable();
   data.addColumn('number', 'Time');
@@ -60,7 +30,7 @@ const getTransactions = async function () {
 
   chart.draw(data, google.charts.Line.convertOptions(options));
 
-  var data1 = google.visualization.arrayToDataTable(positive);
+  var data1 = google.visualization.arrayToDataTable(categoryMap.positive);
 
 
   var options = {
@@ -74,7 +44,7 @@ const getTransactions = async function () {
 
   chart1.draw(data1, options);
 
-  var data2 = google.visualization.arrayToDataTable(negative);
+  var data2 = google.visualization.arrayToDataTable(categoryMap.negative);
 
 
   var options = {
@@ -88,7 +58,17 @@ const getTransactions = async function () {
 
   chart2.draw(data2, options);
 
-
 }
 
-getTransactions();
+
+
+// Check whether account is connected
+const getStatus = async function () {
+  const account = await fetch("/api/is_account_connected");
+  const connected = await account.json();
+  if (connected.status == true) {
+    getTransactions();
+  }
+};
+
+getStatus();
