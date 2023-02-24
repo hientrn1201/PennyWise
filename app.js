@@ -40,6 +40,7 @@ const transactionSchema = {
   category: String,
   amount: Number,
   date: String,
+  merchant: String
 };
 
 //const Transaction = new mongoose.model("Transaction", transactionSchema);
@@ -227,7 +228,8 @@ app.get("/api/transactions", async (req, res, next) => {
       transactionId: transaction.transaction_id,
       category: transaction.category[0],
       date: transaction.date,
-      amount: transaction.amount
+      amount: transaction.amount,
+      merchant: transaction.merchant_name
     }
     shortList.push(newTransaction);
 
