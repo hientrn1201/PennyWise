@@ -53,6 +53,7 @@ const userSchema = new mongoose.Schema({
     balance: Number,
     goal: Number,
     progress: Number,
+    nextCursor: String,
     transactions: [{type: transactionSchema}]
 });
 
@@ -65,11 +66,11 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.get('/', (req, res)=>{
-  res.sendFile(path.join(__dirname, "home.html"));
+  res.sendFile(path.join(__dirname, "views/home.html"));
 })
 
 app.get('/login', (req, res)=>{
-  res.sendFile(path.join(__dirname, "login.html"));
+  res.sendFile(path.join(__dirname, "views/login.html"));
 })
 
 app.post('/login', (req, res) => {
@@ -80,13 +81,13 @@ app.post('/login', (req, res) => {
 
   req.login(user, (err) => {
       if (err) {
-          console.log(err);
           res.redirect('/register')
       } else {
           passport.authenticate('local')(req, res, ()=>{
-            if (typeof(user.accessToken) == undefined) {
+            if (user.accessToken == undefined) {
               res.redirect('/link');    
             } else {
+              console.log("have accessToken");
               res.redirect('/dashboard');
             }
             
@@ -96,12 +97,12 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/register', (req, res)=>{
-  res.sendFile(path.join(__dirname, "register.html"));
+  res.sendFile(path.join(__dirname, "views/register.html"));
 });
 
 app.get("/link", (req, res) => {
   if (req.isAuthenticated()) {
-    res.sendFile(path.join(__dirname, "link.html"));
+    res.sendFile(path.join(__dirname, "views/link.html"));
   } else {
     res.redirect('/login');
   }
@@ -109,7 +110,12 @@ app.get("/link", (req, res) => {
 
 app.get("/dashboard", (req, res) => {
   if (req.isAuthenticated()) {
-    res.sendFile(path.join(__dirname, "dashboard.html"));
+    if (req.user.accessToken == undefined) {
+      res.redirect('/link');    
+    } else {
+      console.log("have accessToken");
+      res.sendFile(path.join(__dirname, "views/dashboard.html"));
+    }
   } else {
     res.redirect('/login');
   }
@@ -132,8 +138,14 @@ app.post('/register', (req, res) => {
           res.redirect('/register');
       } else {
           //the callback function only run if authentication is successful
-          passport.authenticate('local')(req, res, function(){
-            res.redirect('/dashboard');
+          passport.authenticate('local')(req, res, ()=>{
+            if (user.accessToken == undefined) {
+              res.redirect('/link');    
+            } else {
+              console.log("have accessToken");
+              res.redirect('/dashboard');
+            }
+            
           })
       }
   })
@@ -168,6 +180,7 @@ app.get("/api/create_link_token", async (req, res, next) => {
 });
 
 // Exchanges the public token from Plaid Link for an access token
+// At the same time, retrieve initial balance and transactions
 app.post("/api/exchange_public_token", async (req, res, next) => {
   const exchangeResponse = await client.itemPublicTokenExchange({
     public_token: req.body.public_token,
@@ -183,22 +196,47 @@ app.post("/api/exchange_public_token", async (req, res, next) => {
   const balanceResponse = await client.accountsBalanceGet({ access_token });
   const balance = balanceResponse.data.accounts[0].balances.current;
   const accountId = balanceResponse.data.accounts[0].account_id;
+
   User.updateOne({_id: req.user._id}, {balance: balance, accountId: accountId, goal: 200000, progress: 50000}, (e) => {
     if (e) {
       console.log(e);
     }
   });
+  // let start_date = "2022-01-01";
+  // let end_date = '2022-01-31'
+  // const transactionsResponse = await client.transactionsSync({
+  //   client_id: process.env.PLAID_CLIENT_ID,
+  //   secret: process.env.PLAID_SECRET,
+  //   access_token: access_token,
+  //   count: 100
+  // });
+
+  // const transactionsList = transactionsResponse.data.added;
+  // const nextCursor = transactionsResponse.data.next_cursor;
+
+
+  // transactionsList.forEach((transaction) => {
+  //   if (transaction.account_id == req.user.accountId) {
+  //     const newTransaction = {
+  //       transactionId: transaction.transaction_id,
+  //       category: transaction.category[0],
+  //       date: transaction.date,
+  //       amount: transaction.amount,
+  //       merchant: transaction.merchant_name
+  //     }
+
+  //     User.updateOne({_id: req.user._id}, { $addToSet : {transactions: newTransaction}}, (e) => {
+  //       if (e) {
+  //         console.log(e);
+  //       }
+  //     });
+  //   }
+
+  // });
 
   res.json(true);
 });
 
-// Fetches balance data using the Node client library for Plaid
-app.get("/api/balance", async (req, res, next) => {
-  const access_token = req.user.accessToken;
-  res.json({
-    Balance: balance,
-  });
-});
 
 app.get("/api/transactions", async (req, res, next) => {
   // const yourDate = new Date();
@@ -210,7 +248,7 @@ app.get("/api/transactions", async (req, res, next) => {
   // const year = date.getFullYear();
   // const start_date = year+'-'+month+"-01";
   let start_date = "2022-01-01";
-  let end_date = '2022-01-31'
+  let end_date = '2022-02-01'
 
   const access_token = req.user.accessToken;
   const transactionsResponse = await client.transactionsGet({
@@ -222,7 +260,7 @@ app.get("/api/transactions", async (req, res, next) => {
     }
   });
   const transactionsList = transactionsResponse.data.transactions;
-  let shortList = []
+
   transactionsList.forEach((transaction) => {
     const newTransaction = {
       transactionId: transaction.transaction_id,
@@ -231,7 +269,7 @@ app.get("/api/transactions", async (req, res, next) => {
       amount: transaction.amount,
       merchant: transaction.merchant_name
     }
-    shortList.push(newTransaction);
+
 
     User.updateOne({_id: req.user._id}, { $addToSet : {transactions: [newTransaction]}}, (e) => {
       if (e) {
@@ -239,7 +277,8 @@ app.get("/api/transactions", async (req, res, next) => {
       }
     });
   });
-  res.json({transactions: shortList, goal: req.user.goal, progress: req.user.progress});
+  res.join({ status: true });
+  //res.json({transactions: shortList, goal: req.user.goal, progress: req.user.progress});
 })
 
 

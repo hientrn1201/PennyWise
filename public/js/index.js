@@ -52,14 +52,19 @@ const getBalance = async function () {
   console.log(data);
 };
 
+console.log("done the first part");
 
 // Check whether account is connected
 const getStatus = async function () {
   const account = await fetch("/api/is_account_connected");
   const connected = await account.json();
   if (connected.status == true) {
-    //getBalance();
-    window.location = '/dashboard';
+    const loadTransactions = await fetch("/api/transactions");
+    const loaded = loadTransactions.json();
+    console.log("i am loading transactions");
+    if (loaded.status == true) {
+      window.location = '/dashboard';
+    }
   }
 };
 

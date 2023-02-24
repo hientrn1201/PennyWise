@@ -13,6 +13,7 @@ const getTransactions = async function () {
   document.getElementById('progress').textContent = "$"+progress + '';
   document.getElementById('percentage').textContent = Math.round(100*progress/goal)+"%"
 
+  //convert raw data to graph-able data
   const [categoryMap, tArray] = getGraphData(transactions);
     
   var data = new google.visualization.DataTable();
